@@ -1,8 +1,8 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { miniTaskCardProps } from '../types';
+import { MiniTaskCardProps } from '../../types';
 
-const MiniTaskCard = (task : miniTaskCardProps)=>{
+const MiniTaskCard = (task : MiniTaskCardProps)=>{
     return (
         <Card className="text-center mini-task-card">
         <Card.Header>{task.author}</Card.Header>
@@ -13,7 +13,7 @@ const MiniTaskCard = (task : miniTaskCardProps)=>{
           </Card.Text>
           <Button variant="primary">Done</Button>
         </Card.Body>
-        <Card.Footer className="text-muted">{task.expiration_date}</Card.Footer>
+        <Card.Footer className="text-muted">{task.deadline}</Card.Footer>
       </Card>
     )
 }
