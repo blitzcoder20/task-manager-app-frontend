@@ -1,10 +1,10 @@
 import Navbar from 'react-bootstrap/Navbar';
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
-import { link } from '../types';
+import { Link } from '../types';
 
 
-const TaskManagerNavbar = ({links}:{links:Array<link>})=>{
+const TaskManagerNavbar = ({links}:{links:Array<Link>})=>{
 
    
     return(

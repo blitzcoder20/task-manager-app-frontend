@@ -1,3 +1,9 @@
 .mini-task-card{
   max-width: 300px;
 }
+.assignees-label{
+  background-color: whitesmoke;
+  border: 1px solid #0b5ed7;
+  border-radius: 10px;
+  padding: 8px;
+}

@@ -8,7 +8,7 @@ const ShowAllTask = () => {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/tasks")
+    fetch(import.meta.env.VITE_API_ENDPOINT+"/tasks")
       .then((response) => {
         if (!response.ok) {
           setError(true);
@@ -36,7 +36,7 @@ const ShowAllTask = () => {
               <MiniTaskCard
                 author={task.author}
                 deadline={task.deadline}
-                created_at={task.created_at}
+                created_at={task.created_at??'null'}
                 title={task.title}
                 description={task.description}
                 assigned_to={task.assigned_to}

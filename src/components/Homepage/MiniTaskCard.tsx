@@ -11,9 +11,12 @@ const MiniTaskCard = (task : MiniTaskCardProps)=>{
           <Card.Text>
             {task.description}
           </Card.Text>
+          <Card.Text>
+            {task.assigned_to?.map(assignee => <p>{assignee}, </p>)}
+          </Card.Text>
           <Button variant="primary">Done</Button>
         </Card.Body>
-        <Card.Footer className="text-muted">{task.deadline}</Card.Footer>
+        <Card.Footer className="text-muted">{task.created_at}-{task.deadline}</Card.Footer>
       </Card>
     )
 }
