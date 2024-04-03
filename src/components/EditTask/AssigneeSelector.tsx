@@ -13,11 +13,23 @@ export const AssigneeSelector = ({
   const [users, setUsers] = useState<Array<User> | null>(null);
   const [currSelectedId, setCurrSelectedId] = useState(1);
 
+  //Retrieves all the possible users that can be assigned
   useEffect(() => {
     fetch(import.meta.env.VITE_API_ENDPOINT + "/users")
       .then((response) => response.json())
       .then((data) => {
-        const fetchedUsers = data as Array<User>;
+        let fetchedUsers = data as Array<User>;
+
+        //Filters already assigned users
+        fetchedUsers= fetchedUsers.filter((user=>{
+          for(const assignee of assignees){
+            if(user.id == assignee.id){
+              return false;
+            }
+          }
+          return true;
+        }))
+
         setUsers(fetchedUsers);
       });
   }, []);
@@ -27,18 +39,22 @@ export const AssigneeSelector = ({
   };
 
   const handleAddAssignee = () => {
+    //Finds the username from selected id
     const username = users?.find(
       (user) => user.id === currSelectedId
     )?.username;
     if (!username) {
       return;
     }
+
+    //Adds the new assignee
     const newAssignee: AssigneesUsers = {
       id: currSelectedId,
       username: username,
     };
     setAssignees([...assignees, newAssignee]);
 
+    //Updates the possible avaiable users to select
     const filteredUsers = users.filter((user) => {
       if (user.id == currSelectedId) {
         return false;
@@ -49,6 +65,7 @@ export const AssigneeSelector = ({
     if (filteredUsers.length > 0) {
       setCurrSelectedId(filteredUsers[0].id);
     }
+
   };
 
   return (
@@ -76,7 +93,7 @@ export const AssigneeSelector = ({
       <Row>
         {assignees.map((assignee) => {
           return (
-            <Col>
+            <Col key={assignee.id}>
               <Form.Label className="assignees-label">
                 {assignee.username}
               </Form.Label>

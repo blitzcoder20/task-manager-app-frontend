@@ -1,50 +1,69 @@
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { AssigneeSelector } from "./AssigneeSelector";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { AssigneesUsers, Task } from "../../types";
 import { useNavigate } from 'react-router-dom';
 import { Alert } from "react-bootstrap";
+import { SelectedTaskContext } from "../Context/SelectedTaskContext";
 
-const AddTaskForm = () => {
+const EditTaskForm = () => {
 
   //TODO correctly assign author retreiving it from session variable
 
-  const [assignees, setAssignees] = useState<Array<AssigneesUsers>>([]);
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [deadline, setDeadline] = useState("");
+
+  const emptyTask={
+    author: '',
+    created_at: '',
+    deadline: '',
+    title: '',
+    description: '',
+    assigned_to: [],
+    author_id:undefined,
+    id:undefined
+  }
+
+  const editTask = useContext(SelectedTaskContext)?.selectedTask??emptyTask;
+
   const [error,setError] = useState(false);
+
+  const [tempTask,setTempTask] = useState<Task>(editTask)
+  const [assignees, setAssignees] = useState<Array<AssigneesUsers>>(tempTask.assigned_to);
+
 
   const navigate=useNavigate();
 
   const createTask = () => {
     //Construction of task object
     const task: Task = {
-      title: title,
-      description: description,
+      id:tempTask.id??undefined,
+      title: tempTask.title,
+      description: tempTask.description,
       author: "antoespo",
-      assigned_to: assignees.map((a) => a.username),
-      deadline: deadline,
+      author_id:3,
+      assigned_to: assignees,
+      deadline: tempTask.deadline,
     };
 
     //Call to api to make a new task
     const options = {
-      method: "POST",
+      method: task.id? "PUT" : "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(task),
     };
-
     console.log(task);
 
-    fetch(import.meta.env.VITE_API_ENDPOINT+"/tasks/create", options)
+    const actionEndPoint= task.id? 'edit':'create'
+    console.log(actionEndPoint)
+    fetch(import.meta.env.VITE_API_ENDPOINT+"/tasks/"+actionEndPoint, options)
       .then((response) => {
         if(response.ok){
           navigate('/');
           return;
         }
+        console.log(response);
         setError(true);
       })
       .catch((error) => {
@@ -56,12 +75,12 @@ const AddTaskForm = () => {
   const basicFieldsValidation = () : boolean => {
       //TRUE means all fields are valid
       //False otherwise
-      if(title.trim() === "" || description.trim() === ""){
+      if(tempTask.title.trim() === "" || tempTask.description.trim() === ""){
         return false;
       }
 
       //Checks if date is a valid date
-      const date = new Date(deadline);
+      const date = new Date(tempTask.deadline);
       if(isNaN(date.getTime())){
         return false;
       }
@@ -76,7 +95,8 @@ const AddTaskForm = () => {
         <Form.Control
           type="text"
           placeholder="Enter task title"
-          onChange={(e) => setTitle(e.target.value)}
+          onChange={(e) => setTempTask({...tempTask,title: e.target.value})}
+          value={tempTask.title}
         />
       </Form.Group>
 
@@ -84,7 +104,8 @@ const AddTaskForm = () => {
         <Form.Label>Deadline</Form.Label>
         <Form.Control
           type="date"
-          onChange={(e) => setDeadline(e.target.value)}
+          onChange={(e) => setTempTask({...tempTask,deadline: e.target.value})}
+          value={tempTask.deadline}
         />
       </Form.Group>
 
@@ -94,7 +115,8 @@ const AddTaskForm = () => {
           as="textarea"
           rows={3}
           placeholder="Enter task description"
-          onChange={(e) => setDescription(e.target.value)}
+          value={tempTask.description}
+          onChange={(e) => setTempTask({...tempTask,description: e.target.value})}
         />
       </Form.Group>
 
@@ -117,4 +139,4 @@ const AddTaskForm = () => {
   );
 };
 
-export default AddTaskForm;
+export default EditTaskForm;
