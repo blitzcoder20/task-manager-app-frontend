@@ -36,3 +36,5 @@ export type User  = {
 export type AssigneesUsers = {"id":number,"username":string} 
 
 export type SelectedTaskContextT = null | { "selectedTask": Task | null, "setSelectedTask": React.Dispatch<React.SetStateAction<Task | null>> }
+
+export type UserContextT =  null | { "user": User | null, "setUser": React.Dispatch<React.SetStateAction<User | null>> }

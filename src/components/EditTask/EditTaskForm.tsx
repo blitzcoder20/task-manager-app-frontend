@@ -6,6 +6,7 @@ import { AssigneesUsers, Task } from "../../types";
 import { useNavigate } from 'react-router-dom';
 import { Alert } from "react-bootstrap";
 import { SelectedTaskContext } from "../Context/SelectedTaskContext";
+import { dateFormatter } from "../utils/utils";
 
 const EditTaskForm = () => {
 
@@ -67,7 +68,6 @@ const EditTaskForm = () => {
         setError(true);
       })
       .catch((error) => {
-        // Gestisci l'errore
         console.error(error.message);
       });
   };
@@ -104,8 +104,9 @@ const EditTaskForm = () => {
         <Form.Label>Deadline</Form.Label>
         <Form.Control
           type="date"
-          onChange={(e) => setTempTask({...tempTask,deadline: e.target.value})}
-          value={tempTask.deadline}
+          data-date-format="dd/mm/yyyy"
+          onChange={(e) => {console.log(e.target.value);setTempTask({...tempTask,deadline: e.target.value})}}
+          value={dateFormatter(tempTask.deadline,"yyyy-mm-dd")}
         />
       </Form.Group>
 
