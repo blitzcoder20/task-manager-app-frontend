@@ -44,7 +44,7 @@ const MiniTaskCard = (task: MiniTaskCardProps) => {
       <Card.Header>{task.author}</Card.Header>
       <Card.Body>
         <Card.Title>{task.title}</Card.Title>
-        <Card.Text>{task.description}</Card.Text>
+        <Card.Text className="overflow-auto mini-task-card-description">{task.description}</Card.Text>
         <Card.Text>
           {task.assigned_to?.map((assignee) => (
             <Badge key={assignee.id} className="me-1" bg="secondary">

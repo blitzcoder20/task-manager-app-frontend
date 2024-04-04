@@ -72,7 +72,7 @@ const ShowAllTask = () => {
         {!error &&
           tasks &&
           tasksToShow.map((task) => (
-            <Col sm={6} md={4} lg={3} key={task.id}>
+            <Col sm={6} md={4} lg={3} key={task.id} className="mb-3">
               <MiniTaskCard
                 id={task.id ?? undefined}
                 author={task.author}

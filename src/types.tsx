@@ -29,13 +29,19 @@ export type Task = {
 };
 
 export type User = {
-  id: number;
+  id?: number;
   name: string;
   surname: string;
   email: string;
   age: number;
   username: string;
 };
+
+export interface UserRegistration extends User {
+  password:string;
+  confirmPassword:string;
+  [key:string]: string | number | undefined;
+}
 
 export type AssigneesUsers = { id: number; username: string };
 
@@ -53,3 +59,8 @@ export type FilterSearchContextT = null | {
   filterSearch: string;
   setFilterSearch: React.Dispatch<React.SetStateAction<string>>;
 };
+
+export enum AuthActionEnum {
+  login,
+  register
+}

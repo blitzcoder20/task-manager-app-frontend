@@ -9,6 +9,11 @@
   cursor: pointer;
 }
 
+.mini-task-card-description{
+  max-height: 200px;
+}
+
 body{
   background-color: #bab4b4!important;
 }
+

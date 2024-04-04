@@ -1,15 +1,16 @@
 import Container from "react-bootstrap/Container";
 import TaskManagerNavbar from "./components/TaskManagerNavbar";
 import { Row } from "react-bootstrap";
-import { Link, Task, User } from "./types";
+import { AuthActionEnum, Link, Task, User } from "./types";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ShowAllTask from "./components/Homepage/ShowAllTask";
 import EditTask from "./components/EditTask/EditTask";
 import { SelectedTaskContext } from "./components/Context/SelectedTaskContext";
 import { useEffect, useState } from "react";
-import { Login } from "./components/LoginModal";
+import { LoginModal } from "./components/Authentication/LoginModal";
 import { UserContext } from "./components/Context/UserContext";
 import { FilterSearchContext } from "./components/Context/FilterSearchContext";
+import { RegisterModal } from "./components/Authentication/RegisterModal";
 
 const links: Array<Link> = [
   { name: "Homepage", href: "/" },
@@ -17,6 +18,14 @@ const links: Array<Link> = [
 ];
 
 function App() {
+
+
+  const [selectedTask, setSelectedTask] = useState<null | Task>(null);
+
+  const [filterSearch, setFilterSearch] = useState("");
+
+  const [authAction,setAuthAction] = useState(AuthActionEnum.login);
+
   const getUserFromStorage = (): User | null => {
     const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
@@ -27,20 +36,19 @@ function App() {
 
   const [user, setUser] = useState<User | null>(getUserFromStorage());
 
+  
+
   //Saves the logged user to the session storage
   useEffect(() => {
     sessionStorage.setItem("user", JSON.stringify(user));
   }, [user]);
 
-  const [selectedTask, setSelectedTask] = useState<null | Task>(null);
-
-  const [filterSearch, setFilterSearch] = useState("");
-
   return (
     <>
-      {!user && <Login setUser={setUser} />}
-      {user && (
-        <UserContext.Provider value={{ user, setUser }}>
+      <UserContext.Provider value={{ user, setUser }}>
+        {!user && authAction === AuthActionEnum.login && <LoginModal setAuthAction={setAuthAction}/>}
+        {!user && authAction === AuthActionEnum.register && <RegisterModal setAuthAction={setAuthAction}/>}
+        {user && (
           <Router>
             <FilterSearchContext.Provider
               value={{ filterSearch, setFilterSearch }}
@@ -60,8 +68,8 @@ function App() {
               </SelectedTaskContext.Provider>
             </FilterSearchContext.Provider>
           </Router>
-        </UserContext.Provider>
-      )}
+        )}
+      </UserContext.Provider>
     </>
   );
 }
