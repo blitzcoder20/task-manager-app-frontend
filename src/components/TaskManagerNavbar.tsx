@@ -4,14 +4,21 @@ import Nav from "react-bootstrap/Nav";
 import { Link } from "../types";
 import { useContext } from "react";
 import { UserContext } from "./Context/UserContext";
-import { NavDropdown } from "react-bootstrap";
+import { Form, NavDropdown } from "react-bootstrap";
+import { FilterSearchContext } from "./Context/FilterSearchContext";
 
 const TaskManagerNavbar = ({ links }: { links: Array<Link> }) => {
+
   const userContext = useContext(UserContext);
+  const filterSearchContext = useContext(FilterSearchContext)
 
   const logOut = () => {
     userContext?.setUser(null);
   };
+
+  const handleFilterSearch = (event: React.ChangeEvent<HTMLInputElement>)=>{
+    filterSearchContext?.setFilterSearch(event.target.value);
+  }
 
   return (
     <Navbar expand="sm" bg="primary" data-bs-theme="dark" style={{ margin: 0 }}>
@@ -27,6 +34,16 @@ const TaskManagerNavbar = ({ links }: { links: Array<Link> }) => {
               );
             })}
           </Nav>
+          <Form className="d-flex">
+            <Form.Control
+              onChange={handleFilterSearch}
+              value={filterSearchContext?.filterSearch??""}
+              type="search"
+              placeholder="Search"
+              className="me-2"
+              aria-label="Search"
+            />
+          </Form>
           <Nav>
             <NavDropdown
               title={"Welcome " + userContext?.user?.username}
@@ -35,7 +52,7 @@ const TaskManagerNavbar = ({ links }: { links: Array<Link> }) => {
             >
               <NavDropdown.Item onClick={logOut}>LogOut</NavDropdown.Item>
             </NavDropdown>
-          </Nav>
+          </Nav>  
         </Navbar.Collapse>
       </Container>
     </Navbar>

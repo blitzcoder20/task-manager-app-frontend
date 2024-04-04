@@ -9,8 +9,11 @@ export const AssigneeSelector = ({
   assignees: Array<AssigneesUsers>;
   setAssignees: React.Dispatch<React.SetStateAction<AssigneesUsers[]>>;
 }) => {
+  const [users, setUsers] = useState<Array<{
+    id: number;
+    username: string;
+  }> | null>(null);
 
-  const [users, setUsers] = useState<Array<User> | null>(null);
   const [currSelectedId, setCurrSelectedId] = useState(1);
 
   //Retrieves all the possible users that can be assigned
@@ -21,16 +24,20 @@ export const AssigneeSelector = ({
         let fetchedUsers = data as Array<User>;
 
         //Filters already assigned users
-        fetchedUsers= fetchedUsers.filter((user=>{
-          for(const assignee of assignees){
-            if(user.id == assignee.id){
+        fetchedUsers = fetchedUsers.filter((user) => {
+          for (const assignee of assignees) {
+            if (user.id == assignee.id) {
               return false;
             }
           }
           return true;
-        }))
+        });
 
-        setUsers(fetchedUsers);
+        setUsers(
+          fetchedUsers.map((u) => {
+            return { id: u.id, username: u.username };
+          })
+        );
       });
   }, []);
 
@@ -65,7 +72,23 @@ export const AssigneeSelector = ({
     if (filteredUsers.length > 0) {
       setCurrSelectedId(filteredUsers[0].id);
     }
+  };
 
+  const clickedOptionAssignee = (assignee: AssigneesUsers) => {
+    const newAssignees = assignees.filter((a) => a.id !== assignee.id);
+    setAssignees(newAssignees);
+    const newUser = { id: assignee.id, username: assignee.username };
+    let newUsers;
+    if (users) {
+      newUsers = [...users, newUser];
+    } else {
+      newUsers = [newUser];
+    }
+
+    setUsers(newUsers);
+    if (newUsers.length > 0) {
+      setCurrSelectedId(newUsers[0].id);
+    }
   };
 
   return (
@@ -94,7 +117,10 @@ export const AssigneeSelector = ({
         {assignees.map((assignee) => {
           return (
             <Col key={assignee.id}>
-              <Form.Label className="assignees-label">
+              <Form.Label
+                className="assignees-label"
+                onClick={() => clickedOptionAssignee(assignee)}
+              >
                 {assignee.username}
               </Form.Label>
             </Col>

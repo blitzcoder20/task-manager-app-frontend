@@ -3,90 +3,90 @@ import Form from "react-bootstrap/Form";
 import { AssigneeSelector } from "./AssigneeSelector";
 import { useContext, useState } from "react";
 import { AssigneesUsers, Task } from "../../types";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 import { Alert } from "react-bootstrap";
 import { SelectedTaskContext } from "../Context/SelectedTaskContext";
 import { dateFormatter } from "../utils/utils";
+import { UserContext } from "../Context/UserContext";
 
 const EditTaskForm = () => {
-
-  //TODO correctly assign author retreiving it from session variable
-
-
-  const emptyTask={
-    author: '',
-    created_at: '',
-    deadline: '',
-    title: '',
-    description: '',
+  const emptyTask = {
+    author: "",
+    created_at: "",
+    deadline: "",
+    title: "",
+    description: "",
     assigned_to: [],
-    author_id:undefined,
-    id:undefined
-  }
+    author_id: undefined,
+    id: undefined,
+  };
 
-  const editTask = useContext(SelectedTaskContext)?.selectedTask??emptyTask;
+  const currUser = useContext(UserContext);
 
-  const [error,setError] = useState(false);
+  const editTask = useContext(SelectedTaskContext)?.selectedTask ?? emptyTask;
 
-  const [tempTask,setTempTask] = useState<Task>(editTask)
-  const [assignees, setAssignees] = useState<Array<AssigneesUsers>>(tempTask.assigned_to);
+  const [error, setError] = useState(false);
 
+  const [tempTask, setTempTask] = useState<Task>(editTask);
+  const [assignees, setAssignees] = useState<Array<AssigneesUsers>>(
+    tempTask.assigned_to
+  );
 
-  const navigate=useNavigate();
+  const navigate = useNavigate();
 
   const createTask = () => {
     //Construction of task object
     const task: Task = {
-      id:tempTask.id??undefined,
+      id: tempTask.id ?? undefined,
       title: tempTask.title,
       description: tempTask.description,
-      author: "antoespo",
-      author_id:3,
+      author: currUser!.user!.username,
+      author_id: currUser!.user!.id,
       assigned_to: assignees,
       deadline: tempTask.deadline,
     };
 
     //Call to api to make a new task
     const options = {
-      method: task.id? "PUT" : "POST",
+      method: task.id ? "PUT" : "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(task),
     };
-    console.log(task);
 
-    const actionEndPoint= task.id? 'edit':'create'
-    console.log(actionEndPoint)
-    fetch(import.meta.env.VITE_API_ENDPOINT+"/tasks/"+actionEndPoint, options)
+    const actionEndPoint = task.id ? "edit" : "create";
+    fetch(
+      import.meta.env.VITE_API_ENDPOINT + "/tasks/" + actionEndPoint,
+      options
+    )
       .then((response) => {
-        if(response.ok){
-          navigate('/');
+        if (response.ok) {
+          navigate("/");
           return;
         }
-        console.log(response);
         setError(true);
       })
-      .catch((error) => {
-        console.error(error.message);
+      .catch(() => {
+        setError(true);
       });
   };
 
-  const basicFieldsValidation = () : boolean => {
-      //TRUE means all fields are valid
-      //False otherwise
-      if(tempTask.title.trim() === "" || tempTask.description.trim() === ""){
-        return false;
-      }
+  const basicFieldsValidation = (): boolean => {
+    //TRUE means all fields are valid
+    //False otherwise
+    if (tempTask.title.trim() === "" || tempTask.description.trim() === "") {
+      return false;
+    }
 
-      //Checks if date is a valid date
-      const date = new Date(tempTask.deadline);
-      if(isNaN(date.getTime())){
-        return false;
-      }
+    //Checks if date is a valid date
+    const date = new Date(tempTask.deadline);
+    if (isNaN(date.getTime())) {
+      return false;
+    }
 
-      return true;
-  }
+    return true;
+  };
 
   return (
     <Form>
@@ -95,7 +95,7 @@ const EditTaskForm = () => {
         <Form.Control
           type="text"
           placeholder="Enter task title"
-          onChange={(e) => setTempTask({...tempTask,title: e.target.value})}
+          onChange={(e) => setTempTask({ ...tempTask, title: e.target.value })}
           value={tempTask.title}
         />
       </Form.Group>
@@ -105,8 +105,10 @@ const EditTaskForm = () => {
         <Form.Control
           type="date"
           data-date-format="dd/mm/yyyy"
-          onChange={(e) => {console.log(e.target.value);setTempTask({...tempTask,deadline: e.target.value})}}
-          value={dateFormatter(tempTask.deadline,"yyyy-mm-dd")}
+          onChange={(e) => {
+            setTempTask({ ...tempTask, deadline: e.target.value });
+          }}
+          value={dateFormatter(tempTask.deadline, "yyyy-mm-dd")}
         />
       </Form.Group>
 
@@ -117,7 +119,9 @@ const EditTaskForm = () => {
           rows={3}
           placeholder="Enter task description"
           value={tempTask.description}
-          onChange={(e) => setTempTask({...tempTask,description: e.target.value})}
+          onChange={(e) =>
+            setTempTask({ ...tempTask, description: e.target.value })
+          }
         />
       </Form.Group>
 
@@ -131,12 +135,12 @@ const EditTaskForm = () => {
       >
         Confirm
       </Button>
-      {error &&  
-      <Alert key={'danger'} variant={'danger'}>
+      {error && (
+        <Alert key={"danger"} variant={"danger"}>
           An error occurred while attempting to create the task
-      </Alert>}
+        </Alert>
+      )}
     </Form>
-
   );
 };
 
