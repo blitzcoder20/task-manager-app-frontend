@@ -8,10 +8,12 @@ export const LoginModal = ({
 }: {
   setAuthAction: React.Dispatch<React.SetStateAction<AuthActionEnum>>;
 }) => {
+  
   const [show, setShow] = useState(true);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
+  const [disableLoginButton,setDisableLoginButton] = useState(false);
 
   const setUser = useContext(UserContext)?.setUser;
 
@@ -63,10 +65,12 @@ export const LoginModal = ({
   };
 
   const handleLogInClick = async () => {
+    setDisableLoginButton(true);
     if (await tryLogin(email, password)) {
       handleClose();
       return;
     }
+    setDisableLoginButton(false);
     setLoginError(true);
   };
 
@@ -112,7 +116,7 @@ export const LoginModal = ({
         >
           Register
         </Button>
-        <Button variant="primary" onClick={handleLogInClick}>
+        <Button variant="primary" onClick={handleLogInClick} disabled={disableLoginButton}>
           Login
         </Button>
       </Modal.Footer>

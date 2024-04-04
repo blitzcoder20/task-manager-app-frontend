@@ -10,6 +10,7 @@ export const RegisterModal = ({
 }) => {
   const [show, setShow] = useState(true);
   const [registerError, setRegisterError] = useState<string | null>(null);
+  const [disableRegisterButton, setDisableRegisterButton] = useState(false);
 
   const setUser = useContext(UserContext)?.setUser;
 
@@ -30,11 +31,11 @@ export const RegisterModal = ({
 
   //Changes tmpUser state based on the changed field on the form
   const handleFormPropertyChange = (propertyName: string, property: string) => {
-    setTmpUser({...tmpUser,[propertyName]:property});
+    setTmpUser({ ...tmpUser, [propertyName]: property });
   };
 
   const tryRegister = async () => {
-       const requestJson: User = tmpUser;
+    const requestJson: User = tmpUser;
 
     //Call to the api to create a new User
     //Call to api to make a login request
@@ -68,21 +69,37 @@ export const RegisterModal = ({
   };
 
   const handleRegisterClick = async () => {
+    setDisableRegisterButton(true);
 
-     //Checks if password and confirm password are equals
-     if (tmpUser.password !== tmpUser.confirmPassword) {
-      setRegisterError(
-        "Passwords are different, please check the provided information"
-      );
+    //Checks if provided empty data
+    if (
+      tmpUser.email === "" ||
+      tmpUser.name === "" ||
+      tmpUser.surname === "" ||
+      tmpUser.password === "" ||
+      tmpUser.username === ""
+    ) {
+      setRegisterError("You can't provide empty data");
+      setDisableRegisterButton(false);
       return;
     }
 
-    //Tries to register and set the user object 
+    //Checks if password and confirm password are equals
+    if (tmpUser.password !== tmpUser.confirmPassword) {
+      setRegisterError(
+        "Passwords are different, please check the provided information"
+      );
+      setDisableRegisterButton(false);
+      return;
+    }
+
+    //Tries to register and set the user object
     //if the login attempt is successful
     if (await tryRegister()) {
       handleClose();
       return;
     }
+    setDisableRegisterButton(false);
     setRegisterError("An error occurred during registration.");
   };
 
@@ -177,7 +194,7 @@ export const RegisterModal = ({
             />
           </Form.Group>
           <Form.Group className="mb-3" controlId="formLogin.ConfirmPassword">
-            <Form.Label>Password</Form.Label>
+            <Form.Label>Confirm Password</Form.Label>
             <Form.Control
               type="password"
               placeholder="Confirm password"
@@ -197,7 +214,11 @@ export const RegisterModal = ({
         >
           Back
         </Button>
-        <Button variant="primary" onClick={handleRegisterClick}>
+        <Button
+          variant="primary"
+          onClick={handleRegisterClick}
+          disabled={disableRegisterButton}
+        >
           Register
         </Button>
       </Modal.Footer>
