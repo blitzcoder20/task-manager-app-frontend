@@ -35,7 +35,7 @@ export const AssigneeSelector = ({
 
         setUsers(
           fetchedUsers.map((u) => {
-            return { id: u.id, username: u.username };
+            return { id: u.id!, username: u.username };
           })
         );
       });
